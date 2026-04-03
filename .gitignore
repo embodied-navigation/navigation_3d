@@ -1,0 +1,13 @@
+.DS_Store
+.cache/
+.idea/
+.vscode/
+build/
+install/
+log/
+dist/
+out/
+__pycache__/
+*.pyc
+*.pyo
+*.swp

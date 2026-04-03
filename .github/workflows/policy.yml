@@ -1,0 +1,57 @@
+name: policy
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - feature/**
+      - fix/**
+      - docs/**
+      - refactor/**
+      - test/**
+      - chore/**
+      - release/**
+  pull_request:
+
+jobs:
+  branch-name:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check branch name
+        run: |
+          branch_name="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
+          ./scripts/check_branch_name.sh "${branch_name}"
+
+  commit-messages:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check commit messages
+        run: |
+          if [ "${GITHUB_EVENT_NAME}" = "pull_request" ]; then
+            git fetch origin "${{ github.base_ref }}"
+            range="origin/${{ github.base_ref }}..${{ github.event.pull_request.head.sha }}"
+          else
+            before="${{ github.event.before }}"
+            if [ "${before}" = "0000000000000000000000000000000000000000" ]; then
+              range="HEAD~1..HEAD"
+            else
+              range="${before}..HEAD"
+            fi
+          fi
+          git log --format=%s ${range} | while IFS= read -r subject; do
+            printf '%s\n' "${subject}" > /tmp/commit-msg.txt
+            ./scripts/check_commit_msg.sh /tmp/commit-msg.txt
+          done
+
+  pr-title:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check pull request title
+        run: ./scripts/check_pr_title.sh "${{ github.event.pull_request.title }}"

@@ -1,0 +1,32 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-format clang-tidy cmake g++ ninja-build
+
+      - name: Format check
+        run: ./scripts/format_check.sh
+
+      - name: Configure
+        run: ./scripts/configure.sh
+
+      - name: Build
+        run: ./scripts/build.sh
+
+      - name: Test
+        run: ./scripts/test.sh
