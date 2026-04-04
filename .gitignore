@@ -5,6 +5,7 @@
 build/
 install/
 log/
+src/
 dist/
 out/
 __pycache__/

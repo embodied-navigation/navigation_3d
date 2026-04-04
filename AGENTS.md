@@ -19,6 +19,8 @@ This repository is for building `navigation_3d` using a lightweight planning-fir
 
 - Read the repository state before making structural decisions.
 - Prefer minimal, direct changes over speculative refactors.
+- Do not run `colcon build`, `colcon test`, or similar workspace compilation steps on the host machine.
+- Perform build, test, and runtime validation inside the project's Docker environment unless the user explicitly instructs otherwise.
 - Record meaningful planning decisions in `docs/superpowers/plans/`.
 - Record design choices, assumptions, and technical tradeoffs in `docs/superpowers/specs/`.
 - Update `README.md` when the setup or workflow changes materially.

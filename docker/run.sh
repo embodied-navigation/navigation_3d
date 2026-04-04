@@ -2,6 +2,10 @@
 set -euo pipefail
 
 docker run --rm -it \
-  -v "$(pwd)":/workspace/navigation_3d \
-  -w /workspace/navigation_3d \
-  navigation_3d:dev
+  --net=host \
+  -e ROS_DOMAIN_ID="${ROS_DOMAIN_ID:-0}" \
+  -e LD_LIBRARY_PATH="/usr/local/lib:${LD_LIBRARY_PATH:-}" \
+  -v "$(pwd)":/workspace \
+  -v "${HOME}/resource":/resource \
+  -w /workspace \
+  navigation_3d:humble-dev /bin/bash

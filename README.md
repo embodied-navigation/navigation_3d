@@ -42,11 +42,77 @@ The repository is intentionally minimal and is currently in the definition and a
 
 ## Local Commands
 
-Typical local workflow:
+Use the helper scripts from the repository root. Workspace compilation and testing should run inside Docker rather than directly on the host.
+
+Typical command entrypoints:
 
 ```bash
 ./scripts/configure.sh
 ./scripts/build.sh
 ./scripts/test.sh
 ./scripts/format_check.sh
+```
+
+## Workspace Sources
+
+This repository can also be used as the root of a workspace source manifest.
+
+- `base.repos` contains the minimal source set for the current stage
+
+Typical usage with `vcstool`:
+
+```bash
+mkdir -p src
+vcs import src < base.repos
+```
+
+Treat `navigation_3d` itself as the workspace root directory, then run:
+
+```bash
+./scripts/setup_workspace.sh .
+./scripts/build_workspace.sh .
+```
+
+## Phase 1 SLAM Integration
+
+The first validation phase treats an external ROS 2 SLAM system as the primary functional target.
+
+Current external source:
+
+- `lightning-lm` via [`base.repos`](/home/csp/workspace/gaojie_ws/navigation_3d/base.repos)
+
+Recommended workspace layout:
+
+```text
+navigation_3d/
+  base.repos
+  src/
+    lightning_lm/
+  docker/
+  scripts/
+  docs/
+```
+
+## Docker Workflow
+
+The Docker environment is the default place for ROS 2 Humble workspace development, compilation, testing, and SLAM validation. Avoid running `colcon build` or `colcon test` on the host unless you intentionally want to debug a host-only issue.
+
+Build the image:
+
+```bash
+./docker/build.sh
+```
+
+Run a shell with `navigation_3d` mounted as `/workspace`:
+
+```bash
+./docker/run.sh
+```
+
+Inside the container, a typical sequence is:
+
+```bash
+./scripts/setup_workspace.sh /workspace
+./scripts/build_workspace.sh /workspace
+./scripts/run_lightning_demo.sh /workspace
 ```
