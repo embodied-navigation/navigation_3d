@@ -73,16 +73,20 @@ Suggested capability inputs:
 
 ## Suggested Repository Evolution
 
-Initial modules to scaffold later:
+The repository should remain a single integration root while internal boundaries mature. A practical next structure is:
 
+- `slam/`
+- `perceptor/`
+- `pnc/`
+- `nav_protocol/`
+- `nav_launch/`
+- `nav_common/`
 - `docs/`
-- `core/world_model/`
-- `core/robot_model/`
-- `core/traversability/`
-- `core/global_planner/`
-- `core/local_planner/`
-- `interfaces/sim/`
-- `interfaces/io/`
+- `docker/`
+- `scripts/`
+- `.github/`
+
+Inside those modules, the navigation framework should still preserve the core abstractions described earlier, such as world model, robot model, traversability, and planner layers.
 
 ## Key Technical Tradeoff
 

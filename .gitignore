@@ -1,8 +1,12 @@
 .DS_Store
+.codex
+.codex/
 .cache/
 .idea/
 .vscode/
 build/
+data/
+docker/vendor/
 install/
 log/
 src/

@@ -25,7 +25,10 @@ The repository now includes a first-pass engineering baseline for repeatable dev
 - `CONTRIBUTING.md` with commit and branch rules
 - `docker/` for a reproducible dev environment
 - `.github/workflows/ci.yml` for format, build, and test automation
-- `core/`, `interfaces/`, and `tests/` as the initial module layout
+- `docs/superpowers/` for task plans and design records
+- `base.repos` plus `scripts/setup_workspace.sh` and `scripts/build_workspace.sh` for workspace bootstrapping
+
+The long-lived repository boundary is being defined as a single integration root with top-level modules such as `slam/`, `perceptor/`, `pnc/`, `nav_protocol/`, `nav_launch/`, and `nav_common/`. The current `core/`, `interfaces/`, and `tests/` directories remain part of the bootstrap-stage layout while that boundary is still evolving.
 
 ## Product Direction
 
@@ -108,6 +111,8 @@ Run a shell with `navigation_3d` mounted as `/workspace`:
 ```bash
 ./docker/run.sh
 ```
+
+`docker/run.sh` automatically mounts `${HOME}/resource` to `/resource` when that directory exists, preserves `ROS_DOMAIN_ID`, and forwards X11 and NVIDIA settings when the host environment provides them.
 
 Inside the container, a typical sequence is:
 

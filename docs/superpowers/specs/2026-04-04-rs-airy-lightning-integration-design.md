@@ -58,6 +58,11 @@ For the current RS Airy dataset, the preferred integration path is:
 This is the chosen strategy because the direct calibrated extrinsic path still produced unstable map behavior, while IMU pre-rotation with identity extrinsics produced a stable-looking mapping result in validation.
 
 The current baseline runtime config for this strategy is `src/lightning_lm/config/default_rs_airy_front.yaml`.
+The same config now also owns the default UI toggles for both Pangolin and RViz-based debugging:
+
+- keep `use_rviz: false` for the default runtime path
+- set `use_rviz: true` when RViz visualization is needed
+- keep `step_on_kf: false` by default and enable it only for focused debugging
 
 ### 3. Docker-first runtime model
 
