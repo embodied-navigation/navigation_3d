@@ -6,6 +6,8 @@ SLAM mapping quality has been observed to change when DDS runtime behavior chang
 
 The immediate target is the RS Airy workflow, where LiDAR delivery behavior on `/rslidar_points` appears sensitive to DDS configuration.
 
+After introducing the Fast DDS shared-memory-oriented runtime baseline, the observed sensor rate recovered to the expected `10 Hz`, which confirms that DDS configuration was materially affecting the runtime data path.
+
 ## Design Goals
 
 - make the DDS runtime baseline explicit when entering the Docker development shell
@@ -99,6 +101,11 @@ The intended effect of this baseline is:
 - keep memory policy dynamic for both default readers and writers
 - increase participant socket buffer sizes so bursty traffic is less likely to be bottlenecked by default buffers
 
+Observed effect so far:
+
+- the sensor stream recovered to the expected `10 Hz` after applying the DDS fix
+- DDS tuning therefore appears to be part of the runtime correctness baseline, not only an optional optimization
+
 ### 4. Validation boundary
 
 The first validation stage should change only:
@@ -149,6 +156,7 @@ Topic-specific XML tuning is also pragmatic for the current RS Airy bottleneck, 
 ## Follow-Up Work
 
 - record the exact before-and-after quality comparison for RS Airy
+- confirm that the restored `10 Hz` sensor rate is stable across repeated runs
 - decide whether `env.sh` should become a tracked repository file
 - decide whether `fastdds_shm.xml` should also become a tracked repository asset instead of a user-home file
 - extend topic-specific XML tuning only if `/rslidar_imu_data` or other topics show similar sensitivity
@@ -156,3 +164,9 @@ Topic-specific XML tuning is also pragmatic for the current RS Airy bottleneck, 
 ## Current Decision
 
 Adopt Fast DDS with XML-driven QoS and automatic data sharing on `/rslidar_points` as the first DDS runtime candidate to validate for RS Airy SLAM quality.
+
+## Current Status
+
+- the Docker workflow now loads the Fast DDS shared-memory-oriented runtime baseline through `env.sh`
+- the sensor rate has been observed to recover to the expected `10 Hz` after the DDS fix
+- the remaining validation question is whether this runtime correction consistently improves final mapping quality
