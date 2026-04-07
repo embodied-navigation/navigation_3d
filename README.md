@@ -112,7 +112,9 @@ Run a shell with `navigation_3d` mounted as `/workspace`:
 ./docker/run.sh
 ```
 
-`docker/run.sh` automatically mounts `${HOME}/resource` to `/resource` when that directory exists, preserves `ROS_DOMAIN_ID`, and forwards X11 and NVIDIA settings when the host environment provides them.
+`docker/run.sh` automatically mounts `${HOME}/resource` to `/resource` when that directory exists, preserves `ROS_DOMAIN_ID`, forwards X11 and NVIDIA settings when the host environment provides them, and sources [`env.sh`](/home/csp/workspace/gaojie_ws/navigation_3d/env.sh) on shell entry.
+
+For the DDS shared-memory baseline, the repository also provides [`fastdds_shm.xml`](/home/csp/workspace/gaojie_ws/navigation_3d/config/fastdds_shm.xml). `docker/run.sh` mounts [`config/`](/home/csp/workspace/gaojie_ws/navigation_3d/config) into `${HOME}/config` inside the container so `FASTRTPS_DEFAULT_PROFILES_FILE="${HOME}/config/fastdds_shm.xml"` resolves consistently.
 
 Inside the container, a typical sequence is:
 
