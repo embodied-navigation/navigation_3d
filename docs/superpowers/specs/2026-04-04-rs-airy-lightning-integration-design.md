@@ -64,6 +64,18 @@ The same config now also owns the default UI toggles for both Pangolin and RViz-
 - set `use_rviz: true` when RViz visualization is needed
 - keep `step_on_kf: false` by default and enable it only for focused debugging
 
+### 2.1 Display-layer frame compensation
+
+For the current RS Airy workflow, display correction is kept outside the core LIO estimation path.
+
+- apply the 3D display rotation explicitly at the `LaserMapping` output call sites
+- do not hide the transform inside Pangolin or RViz backend classes
+- apply the same corrected display pose to RViz keyframe path and keyframe node publishing
+- prefer a single rolling point-cloud topic in RViz, `/lightning/recent_scans`, instead of simultaneously publishing redundant current-scan and global-map point clouds for this debug workflow
+- do not rewrite keyframe storage, filter state, IMU preintegration, or scan matching with this compensation
+
+This keeps the original `SyncPackages -> IMU process -> ivox update -> lidar update -> MakeKF` structure intact while making the 3D and 2D visual outputs consistent.
+
 ### 3. Docker-first runtime model
 
 Build, test, and runtime validation should continue inside the project Docker environment.
@@ -113,6 +125,7 @@ Reusing the existing RoboSense path is the fastest route to a first run, but it 
 - the chosen IMU pre-rotation matrix may still need refinement if later bags expose drift
 - UI and runtime-library issues may mask data-path failures during the first online run
 - successful startup may still hide point ordering or timing problems until synchronization begins
+- 3D display compensation and 2D g2p5 compensation can diverge if they stop sharing the same rotation configuration
 
 ## Follow-Up Work
 

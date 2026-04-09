@@ -41,6 +41,7 @@ RUN apt-get update && apt-get install -y \
     python3-vcstool \
     python3 \
     wget \
+    tmux \
     ros-humble-pcl-conversions \
     ros-humble-tf2-eigen \
     && rm -rf /var/lib/apt/lists/*

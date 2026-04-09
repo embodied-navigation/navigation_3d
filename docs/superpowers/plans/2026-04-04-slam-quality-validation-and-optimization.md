@@ -26,6 +26,10 @@
 - the current DDS baseline uses:
   - `RMW_IMPLEMENTATION=rmw_fastrtps_cpp`
   - `FASTRTPS_DEFAULT_PROFILES_FILE=${HOME}/config/fastdds_shm.xml`
+- the 3D RViz display path now applies a display-only pose rotation outside the core LIO state update
+- RViz keyframe outputs now include keyframe path, node markers, and a dedicated pose-array topic, and these keyframe displays are aligned to the same display-pose transform as the scan and trajectory views
+- RViz point-cloud publishing has been simplified to `/lightning/recent_scans`, matching the intended Pangolin-style rolling local cloud view
+- the Docker build helper now defaults to bounded parallelism instead of unconstrained compilation
   - `RMW_FASTRTPS_USE_QOS_FROM_XML=1`
 - after applying the DDS fix, the observed sensor rate recovered to the expected `10 Hz`
 - pose jitter has still been observed during dataset playback and may still be affecting de-skewing and scan registration
@@ -81,6 +85,7 @@
 - frontend path
 - backend or keyframe path
 - explicit keyframe node markers
+- keyframe node pose array output for direct RViz point inspection
 - current scan
 - scan history or recent scan context
 - accumulated global map
@@ -93,6 +98,7 @@
 
 - immediate value
   - keyframe node markers for corner-jump diagnosis
+  - keyframe node pose arrays for coordinate sanity checks against the path
   - current frontend and backend pose markers
   - recent scan history to show local registration continuity
   - accumulated global map for long-corridor drift visibility
@@ -216,4 +222,7 @@ The current jitter diagnosis order is:
 - the Docker workflow now includes the Fast DDS shared-memory-oriented runtime baseline
 - the observed sensor rate has recovered to the expected `10 Hz` after the DDS fix
 - the current open quality issue is pose jitter during playback
+- the 3D display orientation has been corrected with an explicit display-pose transform at the `LaserMapping` call site
+- RViz keyframe node displays now follow the same corrected display coordinates as the visible scan and trajectory outputs
+- the current RS Airy visualization baseline is considered acceptable: display orientation is corrected and observed mapping quality is normal
 - this plan is now the single active quality-optimization plan for SLAM mapping work

@@ -14,6 +14,8 @@ shell_command="if [[ -f ${container_env_file} ]]; then source ${container_env_fi
 docker_args=(
   --rm
   --privileged
+  --ipc=host
+  --shm-size=1g
   -it
   --net=host
   -e "ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}"

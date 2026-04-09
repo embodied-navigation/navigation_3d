@@ -4,6 +4,9 @@
 
 This repository is for building `navigation_3d` using a lightweight planning-first workflow inspired by the user's superpower workflow.
 
+## Project Structure (Core Logic)
+- **`docker/`**: 容器化管理中心。包含 Dockerfile、compose 及一键环境配置脚本。编译和运行程序需进入容器中执行。
+
 ## Branch Rules
 
 - Base normal development on `develop`.

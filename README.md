@@ -112,7 +112,7 @@ Run a shell with `navigation_3d` mounted as `/workspace`:
 ./docker/run.sh
 ```
 
-`docker/run.sh` automatically mounts `${HOME}/resource` to `/resource` when that directory exists, preserves `ROS_DOMAIN_ID`, forwards X11 and NVIDIA settings when the host environment provides them, and sources [`env.sh`](/home/csp/workspace/gaojie_ws/navigation_3d/env.sh) on shell entry.
+`docker/run.sh` automatically mounts `${HOME}/resource` to `/resource` when that directory exists, preserves `ROS_DOMAIN_ID`, forwards X11 and NVIDIA settings when the host environment provides them, enables Docker shared-memory support for Fast DDS, and sources [`env.sh`](/home/csp/workspace/gaojie_ws/navigation_3d/env.sh) on shell entry.
 
 For the DDS shared-memory baseline, the repository also provides [`fastdds_shm.xml`](/home/csp/workspace/gaojie_ws/navigation_3d/config/fastdds_shm.xml). `docker/run.sh` mounts [`config/`](/home/csp/workspace/gaojie_ws/navigation_3d/config) into `${HOME}/config` inside the container so `FASTRTPS_DEFAULT_PROFILES_FILE="${HOME}/config/fastdds_shm.xml"` resolves consistently.
 
@@ -123,3 +123,51 @@ Inside the container, a typical sequence is:
 ./scripts/build_workspace.sh /workspace
 ./scripts/run_lightning_demo.sh /workspace
 ```
+
+For incremental development inside the container, rebuild `lightning` only with:
+
+```bash
+source /opt/ros/humble/setup.bash
+cd /workspace
+CMAKE_BUILD_PARALLEL_LEVEL=2 colcon build --base-paths src --packages-select lightning --symlink-install --parallel-workers 2
+source /workspace/install/setup.bash
+```
+
+To rebuild the full workspace inside the container, use:
+
+```bash
+source /opt/ros/humble/setup.bash
+cd /workspace
+./scripts/build_workspace.sh /workspace
+source /workspace/install/setup.bash
+```
+
+`build_workspace.sh` now defaults to `COLCON_PARALLEL_WORKERS=2` and `CMAKE_BUILD_PARALLEL_LEVEL=2` to avoid saturating the CPU. Override them when needed, for example:
+
+```bash
+./scripts/build_workspace.sh /workspace
+```
+
+For the current RS Airy online SLAM path with RViz-based display, use:
+
+```bash
+source /workspace/install/setup.bash
+ros2 run lightning run_slam_online --config /workspace/src/lightning_lm/config/default_rs_airy_front.yaml
+```
+
+This maintained RS Airy config currently enables:
+
+- RViz display output via `use_rviz: true`
+- display-only pose rotation compensation via `system.display_pose_transform_en`
+- RViz point-cloud visualization via `/lightning/recent_scans` only
+
+In RViz, start with `Fixed Frame = map` and add these topics when needed:
+
+- `/lightning/recent_scans`
+- `/lightning/frontend_path`
+- `/lightning/scan_path`
+- `/lightning/frontend_pose`
+- `/lightning/backend_pose`
+- `/lightning/keyframe_path`
+- `/lightning/keyframe_nodes`
+- `/lightning/keyframe_node_poses`
