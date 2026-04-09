@@ -1,11 +1,13 @@
 # AGENTS.md
 
 ## Purpose
-
 This repository is for building `navigation_3d` using a lightweight planning-first workflow inspired by the user's superpower workflow.
 
-## Project Structure (Core Logic)
-- **`docker/`**: 容器化管理中心。包含 Dockerfile、compose 及一键环境配置脚本。编译和运行程序需进入容器中执行。
+## Project Structure
+
+- **`docker/`**: 存放构建 Docker 镜像和进入 Docker 环境的脚本。
+- **`scripts/`**: 存放编译和打包工程的脚本；工程编译需在 Docker 环境中进行。
+- **`src/`**: 存放工程核心源代码。
 
 ## Branch Rules
 
@@ -18,15 +20,11 @@ This repository is for building `navigation_3d` using a lightweight planning-fir
 - Examples: `feature/bootstrap-engineering-foundation`, `fix/traversability-empty-grid`, `docs/update-architecture-notes`.
 - Keep changes small, reviewable, and easy to validate.
 
-## Working Style
+## Commit Rules
 
-- Read the repository state before making structural decisions.
-- Prefer minimal, direct changes over speculative refactors.
-- Do not run `colcon build`, `colcon test`, or similar workspace compilation steps on the host machine.
-- Perform build, test, and runtime validation inside the project's Docker environment unless the user explicitly instructs otherwise.
-- Record meaningful planning decisions in `docs/superpowers/plans/`.
-- Record design choices, assumptions, and technical tradeoffs in `docs/superpowers/specs/`.
-- Update `README.md` when the setup or workflow changes materially.
+- 使用 Conventional Commits 格式：`<type>: <subject>`。
+- 允许的 `type`：`feat`, `fix`, `docs`。
+- `<subject>` 要简短、使用祈使语气且表达具体（例如：`feat: 新增局部规划器open_planner`）。
 
 ## Documentation Rules
 

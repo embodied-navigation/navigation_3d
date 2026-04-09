@@ -152,7 +152,14 @@ For the current RS Airy online SLAM path with RViz-based display, use:
 
 ```bash
 source /workspace/install/setup.bash
-ros2 run lightning run_slam_online --config /workspace/src/lightning_lm/config/default_rs_airy_front.yaml
+ros2 run lightning run_slam_online -- --config /workspace/src/lightning_lm/config/default_rs_airy_front.yaml
+```
+
+For the current RS Airy offline SLAM baseline, use:
+
+```bash
+source /workspace/install/setup.bash
+ros2 run lightning run_slam_offline -- --input_bag /resource/dataset/CSPID/rosbag2_2026_03_29-16_27_32 --config /workspace/src/lightning_lm/config/default_rs_airy_front.yaml
 ```
 
 This maintained RS Airy config currently enables:
@@ -171,3 +178,5 @@ In RViz, start with `Fixed Frame = map` and add these topics when needed:
 - `/lightning/keyframe_path`
 - `/lightning/keyframe_nodes`
 - `/lightning/keyframe_node_poses`
+- `/lightning/loop_constraints`
+- `/lightning/backend_keyframe_map`
