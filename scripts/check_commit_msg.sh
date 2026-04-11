@@ -10,10 +10,10 @@ fi
 
 first_line="$(head -n 1 "${commit_msg_file}")"
 
-if [[ "${first_line}" =~ ^(feat|fix|docs|refactor|style|test|chore)(\([a-z0-9_-]+\))?!?:\ [a-z0-9] ]]; then
+if [[ "${first_line}" =~ ^(feat|fix|docs|refactor|style|test|chore)(\([a-z0-9_-]+\))?!?:\ .+ ]]; then
   exit 0
 fi
 
 echo "invalid commit message: ${first_line}" >&2
-echo "expected Conventional Commits, for example: feat: add world model interface" >&2
+echo "expected Conventional Commits, for example: feat: 新增世界模型接口" >&2
 exit 1
