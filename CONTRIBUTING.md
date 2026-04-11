@@ -77,4 +77,9 @@ The repository runs policy checks in GitHub Actions for:
 - commit message format
 - pull request title format
 
-The same checks live in `scripts/` so they can also be reused locally later.
+Local `pre-commit` also enforces:
+
+- branch naming on `pre-commit`
+- commit message format on `commit-msg`
+
+The same policy scripts live in `scripts/` for reuse in CI and local hooks.
