@@ -1,0 +1,37 @@
+repositories:
+  nav_common:
+    type: git
+    url: git@github.com:embodied-navigation/nav_common.git
+    version: main
+  nav_protocol:
+    type: git
+    url: git@github.com:embodied-navigation/nav_protocol.git
+    version: main
+  map_manager:
+    type: git
+    url: git@github.com:embodied-navigation/map_manager.git
+    version: main
+  slam:
+    type: git
+    url: git@github.com:embodied-navigation/slam.git
+    version: main
+  perception:
+    type: git
+    url: git@github.com:embodied-navigation/perception.git
+    version: main
+  planner:
+    type: git
+    url: git@github.com:embodied-navigation/planner.git
+    version: main
+  controller:
+    type: git
+    url: git@github.com:embodied-navigation/controller.git
+    version: main
+  task_manager:
+    type: git
+    url: git@github.com:embodied-navigation/task_manager.git
+    version: main
+  nav_launch:
+    type: git
+    url: git@github.com:embodied-navigation/nav_launch.git
+    version: main

@@ -1,104 +1,92 @@
 # navigation_3d
 
-`navigation_3d` is a repository for developing a 3D navigation framework for legged robots, with an initial focus on quadrupeds and humanoids.
+`navigation_3d` is the public integration repository for the `embodied-navigation`
+organization. It is the current primary development entrypoint for a ROS 2 based 3D
+navigation framework targeting legged robots, with an initial focus on quadrupeds and
+humanoids.
 
-## Workflow
+## Repository Role
 
-This repository uses a simple `main + develop` branch model:
+This repository is the current single main repository for:
 
-- `develop` is the default integration branch for daily development.
-- `main` is reserved for stable, release-ready states.
-- New work should start from `develop` and land through focused commits or pull requests.
+- workspace integration and dependency assembly
+- launch and runtime assembly
+- Docker-based development environment bootstrap
+- project governance, documentation, scripts, and CI
+- future module-splitting and repository migration planning
 
-The repository also keeps planning and design artifacts under `docs/superpowers/`:
+Although dedicated child repositories already exist in the organization, current formal
+development remains in this repository.
 
-- `docs/superpowers/plans/` for short task plans
-- `docs/superpowers/specs/` for implementation and design notes
+## Branch Model
 
-Agent and contributor instructions live in `AGENTS.md`.
+This repository follows a `main + develop` model:
 
-## Engineering Baseline
+- `develop` is the default integration branch for daily work
+- `main` is the stable, release-oriented branch
+- normal work should start from `develop` using a topic branch
+- direct pushes to `main` are not part of the normal workflow
 
-The repository now includes a first-pass engineering baseline for repeatable development:
+Detailed branch, commit, and PR rules live in [`AGENTS.md`](./AGENTS.md) and
+[`CONTRIBUTING.md`](./CONTRIBUTING.md).
 
-- `.clang-format`, `.clang-tidy`, `.editorconfig`
-- `CONTRIBUTING.md` with commit and branch rules
-- `docker/` for a reproducible dev environment
-- `.github/workflows/ci.yml` for format, build, and test automation
-- `docs/superpowers/` for task plans and design records
-- `base.repos` plus `scripts/setup_workspace.sh` and `scripts/build_workspace.sh` for workspace bootstrapping
+## Planned ROS 2 Modules
 
-The long-lived repository boundary is being defined as a single integration root with top-level modules such as `slam/`, `perceptor/`, `pnc/`, `nav_protocol/`, `nav_launch/`, and `nav_common/`. The current `core/`, `interfaces/`, and `tests/` directories remain part of the bootstrap-stage layout while that boundary is still evolving.
+The long-term repository boundary is centered on these ROS 2 packages:
 
-## Product Direction
+- `nav_common`
+- `nav_protocol`
+- `map_manager`
+- `slam`
+- `perception`
+- `planner`
+- `controller`
+- `task_manager`
+- `nav_launch`
 
-The framework is intended to support robots that cannot rely on flat-ground 2D navigation assumptions. The initial target is a reusable stack for:
+The legacy `core/` and `interfaces/` layouts are no longer part of the intended long-term
+structure. They have been retired from the active repository shape and are retained only in
+historical documentation and commit history.
 
-- 3D environment representation
-- traversability analysis for legged robots
-- global and local planning in uneven terrain
-- interfaces that can be adapted to both quadrupeds and humanoids
+## Child Repositories
 
-## Current Status
+The `embodied-navigation` organization already reserves matching child repositories for the
+future module split, but they are currently placeholder repositories only.
 
-The repository is intentionally minimal and is currently in the definition and architecture stage.
+Current rule:
 
-## Local Commands
+- `navigation_3d` is the only formal development repository
+- child repositories reserve names, ownership boundaries, and future migration targets
+- code movement into child repositories will happen only after interfaces and ownership are
+  stable enough to justify independent versioning
 
-Use the helper scripts from the repository root. Workspace compilation and testing should run inside Docker rather than directly on the host.
-
-Typical command entrypoints:
-
-```bash
-./scripts/configure.sh
-./scripts/build.sh
-./scripts/test.sh
-./scripts/format_check.sh
-```
+See [`docs/repository-plan.md`](./docs/repository-plan.md) for the detailed policy.
 
 ## Workspace Sources
 
-This repository can also be used as the root of a workspace source manifest.
+The repository uses a `vcstool` manifest under `repos/` as the primary workspace source
+entrypoint.
 
-- `base.repos` contains the minimal source set for the current stage
-
-Typical usage with `vcstool`:
+Initial import:
 
 ```bash
 mkdir -p src
-vcs import src < base.repos
+vcs import src < repos/private.repos
 ```
 
-Treat `navigation_3d` itself as the workspace root directory, then run:
+Update existing sources:
 
 ```bash
-./scripts/setup_workspace.sh .
-./scripts/build_workspace.sh .
+vcs pull src
 ```
 
-## Phase 1 SLAM Integration
+`base.repos` is retained only as a historical compatibility manifest for the earlier
+bootstrap stage and is no longer the recommended main entrypoint.
 
-The first validation phase treats an external ROS 2 SLAM system as the primary functional target.
+## Development Environment
 
-Current external source:
-
-- `lightning-lm` via [`base.repos`](/home/csp/workspace/gaojie_ws/navigation_3d/base.repos)
-
-Recommended workspace layout:
-
-```text
-navigation_3d/
-  base.repos
-  src/
-    lightning_lm/
-  docker/
-  scripts/
-  docs/
-```
-
-## Docker Workflow
-
-The Docker environment is the default place for ROS 2 Humble workspace development, compilation, testing, and SLAM validation. Avoid running `colcon build` or `colcon test` on the host unless you intentionally want to debug a host-only issue.
+The standard development environment is Docker-based and centered on Ubuntu 22.04 + ROS 2
+Humble. Host-side builds are not the recommended primary workflow.
 
 Build the image:
 
@@ -106,77 +94,48 @@ Build the image:
 ./docker/build.sh
 ```
 
-Run a shell with `navigation_3d` mounted as `/workspace`:
+Run the development shell:
 
 ```bash
 ./docker/run.sh
 ```
-
-`docker/run.sh` automatically mounts `${HOME}/resource` to `/resource` when that directory exists, preserves `ROS_DOMAIN_ID`, forwards X11 and NVIDIA settings when the host environment provides them, enables Docker shared-memory support for Fast DDS, and sources [`env.sh`](/home/csp/workspace/gaojie_ws/navigation_3d/env.sh) on shell entry.
-
-For the DDS shared-memory baseline, the repository also provides [`fastdds_shm.xml`](/home/csp/workspace/gaojie_ws/navigation_3d/config/fastdds_shm.xml). `docker/run.sh` mounts [`config/`](/home/csp/workspace/gaojie_ws/navigation_3d/config) into `${HOME}/config` inside the container so `FASTRTPS_DEFAULT_PROFILES_FILE="${HOME}/config/fastdds_shm.xml"` resolves consistently.
 
 Inside the container, a typical sequence is:
 
 ```bash
 ./scripts/setup_workspace.sh /workspace
 ./scripts/build_workspace.sh /workspace
-./scripts/run_lightning_demo.sh /workspace
+./scripts/test.sh
 ```
 
-For incremental development inside the container, rebuild `lightning` only with:
+`docker/run.sh` mounts the repository as `/workspace`, preserves `ROS_DOMAIN_ID`, forwards
+X11 and NVIDIA settings when available, and sources [`env.sh`](./env.sh) on shell entry.
+
+For the DDS shared-memory baseline, the repository provides
+[`config/fastdds_shm.xml`](./config/fastdds_shm.xml), which can be used as the default Fast
+DDS profile inside the container.
+
+For more detail, see [`docs/development-environment.md`](./docs/development-environment.md).
+
+## Local Commands
+
+Primary helper entrypoints:
 
 ```bash
-source /opt/ros/humble/setup.bash
-cd /workspace
-CMAKE_BUILD_PARALLEL_LEVEL=2 colcon build --base-paths src --packages-select lightning --symlink-install --parallel-workers 2
-source /workspace/install/setup.bash
+./scripts/configure.sh
+./scripts/build.sh
+./scripts/test.sh
+./scripts/format_check.sh
+./scripts/setup_workspace.sh .
 ```
 
-To rebuild the full workspace inside the container, use:
+## Planning And Design Records
 
-```bash
-source /opt/ros/humble/setup.bash
-cd /workspace
-./scripts/build_workspace.sh /workspace
-source /workspace/install/setup.bash
-```
+Planning and design artifacts live under `docs/superpowers/`:
 
-`build_workspace.sh` now defaults to `COLCON_PARALLEL_WORKERS=2` and `CMAKE_BUILD_PARALLEL_LEVEL=2` to avoid saturating the CPU. Override them when needed, for example:
+- `docs/superpowers/plans/`
+- `docs/superpowers/specs/`
 
-```bash
-./scripts/build_workspace.sh /workspace
-```
-
-For the current RS Airy online SLAM path with RViz-based display, use:
-
-```bash
-source /workspace/install/setup.bash
-ros2 run lightning run_slam_online -- --config /workspace/src/lightning_lm/config/default_rs_airy_front.yaml
-```
-
-For the current RS Airy offline SLAM baseline, use:
-
-```bash
-source /workspace/install/setup.bash
-ros2 run lightning run_slam_offline -- --input_bag /resource/dataset/CSPID/rosbag2_2026_03_29-16_27_32 --config /workspace/src/lightning_lm/config/default_rs_airy_front.yaml
-```
-
-This maintained RS Airy config currently enables:
-
-- RViz display output via `use_rviz: true`
-- display-only pose rotation compensation via `system.display_pose_transform_en`
-- RViz point-cloud visualization via `/lightning/recent_scans` only
-
-In RViz, start with `Fixed Frame = map` and add these topics when needed:
-
-- `/lightning/recent_scans`
-- `/lightning/frontend_path`
-- `/lightning/scan_path`
-- `/lightning/frontend_pose`
-- `/lightning/backend_pose`
-- `/lightning/keyframe_path`
-- `/lightning/keyframe_nodes`
-- `/lightning/keyframe_node_poses`
-- `/lightning/loop_constraints`
-- `/lightning/backend_keyframe_map`
+These records remain useful historical references, but current repository governance and
+workspace strategy are defined by the documents in `docs/` and the active root-level
+scripts.
