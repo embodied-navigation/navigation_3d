@@ -34,12 +34,12 @@ This repository is for building `navigation_3d` using a lightweight planning-fir
 - 当变更影响架构、工作流或开发者环境时，需在同一分支中同步更新相关文档。
 
 
-## Documentation Rules
+## C++ Formatting Rules
 
-- Create one plan file per meaningful task or milestone.
-- Keep plan files short and action-oriented.
-- Write specs only when a design choice, interface, or architecture needs to be preserved.
-- Prefer dated file names so the history stays searchable.
+- 对 C/C++ 相关文件的修改，必须遵循仓库根目录 `.clang-format` 的格式规则。
+- 在完成 C/C++ 代码修改后，优先使用 `.clang-format` 对受影响文件进行格式化。
+- 不要凭个人习惯调整括号、缩进、换行或对齐方式；以 `.clang-format` 为准。
+- 若当前环境无法运行格式化工具，最终说明中必须明确说明未执行格式化。
 
 ## Validation
 
