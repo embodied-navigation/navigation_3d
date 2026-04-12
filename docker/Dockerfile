@@ -43,26 +43,11 @@ RUN apt-get update && apt-get install -y \
     wget \
     tmux \
     ros-humble-pcl-conversions \
+    ros-humble-rviz2 \
+    ros-humble-rviz-default-plugins \
+    ros-humble-tf2-ros \
     ros-humble-tf2-eigen \
     && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /tmp
-
-COPY src/lightning_lm/thirdparty/Pangolin-0.9.3.zip /tmp/Pangolin-0.9.3.zip
-
-RUN apt-get update && apt-get install -y unzip && rm -rf /var/lib/apt/lists/* \
-    && unzip /tmp/Pangolin-0.9.3.zip -d /tmp \
-    && cd /tmp/Pangolin-0.9.3 \
-    && cmake -B build -S . \
-       -DCMAKE_BUILD_TYPE=Release \
-       -DCMAKE_INSTALL_PREFIX=/usr/local \
-       -DBUILD_PANGOLIN_PYTHON=OFF \
-    && cmake --build build -j"$(nproc)" \
-    && cmake --install build \
-    && echo "/usr/local/lib" > /etc/ld.so.conf.d/pangolin.conf \
-    && ldconfig \
-    && cd / \
-    && rm -rf /tmp/Pangolin-0.9.3 /tmp/Pangolin-0.9.3.zip
 
 RUN rosdep init || true
 

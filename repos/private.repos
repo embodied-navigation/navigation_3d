@@ -10,11 +10,11 @@ repositories:
   map_manager:
     type: git
     url: git@github.com:embodied-navigation/map_manager.git
-    version: main
+    version: feature/minimal-navigation-mvp
   slam:
     type: git
     url: git@github.com:embodied-navigation/slam.git
-    version: main
+    version: feature/minimal-navigation-mvp
   perception:
     type: git
     url: git@github.com:embodied-navigation/perception.git
@@ -22,11 +22,11 @@ repositories:
   planner:
     type: git
     url: git@github.com:embodied-navigation/planner.git
-    version: main
+    version: feature/minimal-navigation-mvp
   controller:
     type: git
     url: git@github.com:embodied-navigation/controller.git
-    version: main
+    version: feature/minimal-navigation-mvp
   task_manager:
     type: git
     url: git@github.com:embodied-navigation/task_manager.git
@@ -34,4 +34,4 @@ repositories:
   nav_launch:
     type: git
     url: git@github.com:embodied-navigation/nav_launch.git
-    version: main
+    version: feature/minimal-navigation-mvp
