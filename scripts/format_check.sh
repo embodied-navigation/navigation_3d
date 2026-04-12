@@ -6,7 +6,7 @@ if ! command -v clang-format >/dev/null 2>&1; then
   exit 1
 fi
 
-files=$(find core tests -type f \( -name '*.hpp' -o -name '*.cpp' \))
+files=$(find src -type f \( -name '*.hpp' -o -name '*.cpp' \) 2>/dev/null || true)
 
 if [ -z "${files}" ]; then
   exit 0

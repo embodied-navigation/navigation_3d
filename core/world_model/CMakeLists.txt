@@ -1,3 +1,0 @@
-add_library(navigation_3d_world_model INTERFACE)
-target_include_directories(navigation_3d_world_model INTERFACE include)
-target_link_libraries(navigation_3d_world_model INTERFACE navigation_3d_project_options)
