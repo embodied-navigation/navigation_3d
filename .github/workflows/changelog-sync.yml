@@ -1,0 +1,41 @@
+name: changelog-sync
+
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  changelog-sync:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate changelog
+        run: ./scripts/update_changelog.py --output CHANGELOG.md
+        shell: bash
+
+      - name: Create or update changelog PR
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: bot/changelog-sync
+          base: develop
+          commit-message: "docs: 更新 Changelog"
+          title: "docs: 自动更新 Changelog"
+          body: |
+            ## 变更概述
+
+            - 自动生成并更新 `CHANGELOG.md`。
+
+            ## 验证方式
+
+            - `./scripts/update_changelog.py --output CHANGELOG.md`
+          labels: docs,changelog

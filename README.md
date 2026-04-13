@@ -149,6 +149,7 @@ Release notes are generated from tag ranges and Conventional Commits.
 
 - draft generation and release-note rules: [`docs/release-notes.md`](./docs/release-notes.md)
 - generator script: [`scripts/release_notes.py`](./scripts/release_notes.py)
+- rolling changelog: [`CHANGELOG.md`](./CHANGELOG.md)
 
 ## Local Commands
 
