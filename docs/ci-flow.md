@@ -86,3 +86,15 @@ The integration smoke is intentionally lighter than the manual end-to-end naviga
 it only requires a goal publication, a plan publication, and a controller status update,
 while the full `scripts/test_minimal_navigation.sh` loop remains available for deeper
 validation.
+
+## Weekly Review Workflow
+
+In addition to CI, the repository has a weekly AI-assisted review workflow:
+
+- it runs every Friday and can also be triggered manually
+- it collects repository facts from the main repository and all child repositories
+- it reviews open PRs only and ranks them by risk
+- it outputs a Markdown report and can send it by email
+
+The workflow is documented in [`docs/weekly-review.md`](./weekly-review.md) and
+implemented by [`.github/workflows/weekly-review.yml`](../.github/workflows/weekly-review.yml).

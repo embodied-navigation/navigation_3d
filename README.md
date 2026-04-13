@@ -143,6 +143,15 @@ The repository follows a two-level CI model:
 
 The detailed process is documented in [`docs/ci-flow.md`](./docs/ci-flow.md).
 
+## Weekly Review
+
+The repository also runs a weekly AI-assisted review digest that aggregates open pull
+requests and repository health across `navigation_3d` and all child repositories.
+
+- weekly review guide: [`docs/weekly-review.md`](./docs/weekly-review.md)
+- workflow: [`.github/workflows/weekly-review.yml`](./.github/workflows/weekly-review.yml)
+- output: Markdown email plus JSON artifact
+
 ## Release Notes
 
 Release notes are generated from tag ranges and Conventional Commits.

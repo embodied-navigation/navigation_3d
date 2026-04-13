@@ -1,0 +1,106 @@
+name: weekly-review
+
+on:
+  schedule:
+    - cron: "0 2 * * 5"
+  workflow_dispatch:
+    inputs:
+      lookback_days:
+        description: "Lookback window in days"
+        required: false
+        default: "7"
+      ai_backend:
+        description: "AI backend"
+        required: false
+        default: "auto"
+        type: choice
+        options:
+          - auto
+          - heuristic
+          - openai
+      send_email:
+        description: "Send email after generation"
+        required: false
+        default: "true"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+permissions:
+  contents: read
+
+jobs:
+  weekly-review:
+    runs-on: ubuntu-24.04
+    env:
+      LOOKBACK_DAYS: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.lookback_days || '7' }}
+      AI_BACKEND: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.ai_backend || 'auto' }}
+      SEND_EMAIL: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.send_email || 'true' }}
+      GITHUB_TOKEN: ${{ github.token }}
+      WEEKLY_REVIEW_GITHUB_TOKEN: ${{ secrets.WEEKLY_REVIEW_GITHUB_TOKEN }}
+      WEEKLY_REVIEW_OPENAI_API_KEY: ${{ secrets.WEEKLY_REVIEW_OPENAI_API_KEY }}
+      WEEKLY_REVIEW_OPENAI_BASE_URL: ${{ vars.WEEKLY_REVIEW_OPENAI_BASE_URL }}
+      WEEKLY_REVIEW_OPENAI_MODEL: ${{ vars.WEEKLY_REVIEW_OPENAI_MODEL }}
+      WEEKLY_REVIEW_SMTP_HOST: ${{ secrets.WEEKLY_REVIEW_SMTP_HOST }}
+      WEEKLY_REVIEW_SMTP_PORT: ${{ secrets.WEEKLY_REVIEW_SMTP_PORT }}
+      WEEKLY_REVIEW_SMTP_USERNAME: ${{ secrets.WEEKLY_REVIEW_SMTP_USERNAME }}
+      WEEKLY_REVIEW_SMTP_PASSWORD: ${{ secrets.WEEKLY_REVIEW_SMTP_PASSWORD }}
+      WEEKLY_REVIEW_FROM: ${{ secrets.WEEKLY_REVIEW_FROM }}
+      WEEKLY_REVIEW_TO: ${{ secrets.WEEKLY_REVIEW_TO }}
+      WEEKLY_REVIEW_TIMEZONE: Asia/Shanghai
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Generate weekly report
+        run: |
+          python3 scripts/weekly_review.py \
+            --repo-root . \
+            --manifest repos/private.repos \
+            --lookback-days "${LOOKBACK_DAYS}" \
+            --timezone "${WEEKLY_REVIEW_TIMEZONE}" \
+            --ai-backend "${AI_BACKEND}" \
+            --ai-model "${WEEKLY_REVIEW_OPENAI_MODEL:-gpt-4.1-mini}" \
+            --ai-base-url "${WEEKLY_REVIEW_OPENAI_BASE_URL:-https://api.openai.com/v1}" \
+            --output weekly-review.md \
+            --json-output weekly-review.json
+          cat weekly-review.md
+        shell: bash
+
+      - name: Upload weekly report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: weekly-review
+          path: |
+            weekly-review.md
+            weekly-review.json
+
+      - name: Send Markdown email
+        if: >-
+          ${{
+            env.SEND_EMAIL != 'false' &&
+            env.WEEKLY_REVIEW_SMTP_HOST != '' &&
+            env.WEEKLY_REVIEW_FROM != '' &&
+            env.WEEKLY_REVIEW_TO != ''
+          }}
+        run: |
+          subject="navigation_3d weekly review | $(TZ="${WEEKLY_REVIEW_TIMEZONE}" date +%G-W%V)"
+          python3 scripts/send_markdown_email.py \
+            --input weekly-review.md \
+            --subject "${subject}" \
+            --from "${WEEKLY_REVIEW_FROM}" \
+            --to "${WEEKLY_REVIEW_TO}" \
+            --smtp-host "${WEEKLY_REVIEW_SMTP_HOST}" \
+            --smtp-port "${WEEKLY_REVIEW_SMTP_PORT:-587}" \
+            --smtp-username "${WEEKLY_REVIEW_SMTP_USERNAME:-}" \
+            --smtp-password "${WEEKLY_REVIEW_SMTP_PASSWORD:-}"
+        shell: bash
