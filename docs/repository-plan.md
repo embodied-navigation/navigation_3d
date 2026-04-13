@@ -99,6 +99,18 @@ The repository uses a two-level CI model:
 Shared helpers live in the root `scripts/` directory. The CI flow is documented in
 [`docs/ci-flow.md`](./ci-flow.md).
 
+## Weekly Review Strategy
+
+The repository also runs a weekly AI-assisted review workflow that complements CI:
+
+- scheduled on Fridays and triggerable on demand
+- collects facts for `navigation_3d` and all child repositories
+- reviews open PRs only
+- ranks risks and produces a Markdown email report
+
+The weekly review workflow is documented in [`docs/weekly-review.md`](./weekly-review.md)
+and implemented by [`.github/workflows/weekly-review.yml`](../.github/workflows/weekly-review.yml).
+
 ## Release Notes Strategy
 
 The repository uses Git tags as the source of truth for versioned release notes.
