@@ -1,7 +1,0 @@
-# Historical compatibility manifest retained from the earlier bootstrap stage.
-# The current main workspace source entrypoint is repos/private.repos.
-repositories:
-  lightning_lm:
-    type: git
-    url: https://github.com/gaoxiang12/lightning-lm.git
-    version: main
