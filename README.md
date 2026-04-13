@@ -53,8 +53,8 @@ historical documentation and commit history.
 
 ## Child Repositories
 
-The `embodied-navigation` organization now uses dedicated child repositories for active
-module development.
+The `embodied-navigation` organization uses dedicated child repositories for active module
+development.
 
 Current rule:
 
@@ -63,6 +63,8 @@ Current rule:
 - workspace assembly, Docker environment, launch orchestration, CI, and smoke validation are
   still owned by this repository
 - the current minimal navigation MVP is assembled through `repos/private.repos`
+- `repos/private.repos` is the workspace manifest that pins the active MVP branches for the
+  child repositories participating in the current minimal navigation system
 
 See [`docs/repository-plan.md`](./docs/repository-plan.md) for the detailed policy.
 
@@ -84,7 +86,8 @@ Update existing sources:
 vcs pull src
 ```
 
-`repos/private.repos` currently pins the active MVP branches for:
+`repos/private.repos` is the current main source of truth for child repository assembly and
+currently pins the active MVP branches for:
 
 - `nav_protocol`
 - `slam`
