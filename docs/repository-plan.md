@@ -24,9 +24,7 @@ The matching child repositories already exist:
 
 Current status:
 
-- `nav_protocol`, `slam`, `map_manager`, `planner`, `controller`, and `nav_launch` are active
-  development repositories for the current MVP
-- `nav_common`, `perception`, and `task_manager` remain reserved for later stages
+- all child repositories are tracked through `develop` as active development repositories
 - `navigation_3d` continues to own integration, launch, environment, CI, and version locking
 
 ## Branch Strategy
@@ -53,7 +51,7 @@ vcs pull src
 ```
 
 `repos/private.repos` is the current main source of truth for child repository assembly and
-pins the active MVP branches for the child repositories participating in the current
+pins the active `develop` branches for the child repositories participating in the current
 minimal navigation system.
 
 `base.repos` remains only as a historical compatibility manifest from the earlier bootstrap

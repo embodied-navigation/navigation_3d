@@ -62,9 +62,10 @@ Current rule:
 - module development happens in child repositories
 - workspace assembly, Docker environment, launch orchestration, CI, and smoke validation are
   still owned by this repository
-- `repos/private.repos` is the workspace manifest that pins the active MVP branches for the
-  child repositories participating in the current minimal navigation system
+- `repos/private.repos` is the workspace manifest that pins the active `develop` branches for
+  the child repositories participating in the current minimal navigation system
 - the current minimal navigation MVP is assembled through `repos/private.repos`
+- all child repositories are currently governed through `develop`
 
 See [`docs/repository-plan.md`](./docs/repository-plan.md) for the detailed policy.
 
@@ -87,7 +88,7 @@ vcs pull src
 ```
 
 `repos/private.repos` is the current main source of truth for child repository assembly and
-currently pins the active MVP branches for:
+currently pins the active `develop` branches for:
 
 - `nav_protocol`
 - `slam`
