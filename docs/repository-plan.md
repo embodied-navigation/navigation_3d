@@ -7,8 +7,8 @@ This document defines the current repository governance and workspace strategy f
 
 ## Current Repository Model
 
-`navigation_3d` is the only formal development repository in the `embodied-navigation`
-organization at the current stage.
+`navigation_3d` is the integration repository in the `embodied-navigation` organization at
+the current stage.
 
 The matching child repositories already exist:
 
@@ -24,12 +24,10 @@ The matching child repositories already exist:
 
 Current status:
 
-- `status: reserved`
-- `code_owner: none yet`
-- `migration_phase: future`
-
-These child repositories currently reserve names, future ownership boundaries, and future
-repository targets only. They do not yet host formal implementation work.
+- `nav_protocol`, `slam`, `map_manager`, `planner`, `controller`, and `nav_launch` are active
+  development repositories for the current MVP
+- `nav_common`, `perception`, and `task_manager` remain reserved for later stages
+- `navigation_3d` continues to own integration, launch, environment, CI, and version locking
 
 ## Branch Strategy
 
@@ -54,7 +52,9 @@ Update existing child repositories with:
 vcs pull src
 ```
 
-`repos/private.repos` is the current main source of truth for child repository assembly.
+`repos/private.repos` is the current main source of truth for child repository assembly and
+pins the active MVP branches for the child repositories participating in the current
+minimal navigation system.
 
 `base.repos` remains only as a historical compatibility manifest from the earlier bootstrap
 phase and is no longer the recommended main workflow entrypoint.
@@ -81,16 +81,14 @@ Current policy:
 - do not describe the old layout as the long-term repository structure
 - keep migration planning separate from implementation work
 
-## Future Split Triggers
+## Current Multi-Repository Rule
 
-Child repositories should begin hosting real implementation only when one or more of the
-following become true:
+The active rule is:
 
-- the corresponding module interfaces are stable
-- the module has a clear long-term owner
-- the module needs an independent release cadence
-- the main repository CI or collaboration cost becomes too high
-- the module has clear reuse value outside the main repository
+- child repositories own module implementation
+- `navigation_3d` owns system assembly and validation
+- a child repository change is not complete until the main repository updates
+  `repos/private.repos` and the Docker-based smoke test passes
 
 ## Future Migration Direction
 
@@ -107,5 +105,5 @@ The next repository structure target is expected to center on these ROS 2 packag
 - `src/task_manager`
 - `src/nav_launch`
 
-This document only defines the governance and migration direction. It does not itself move
-code into the child repositories.
+The next modules expected to become active repositories are `perception` and `task_manager`,
+but they are intentionally not part of the current minimal navigation MVP.

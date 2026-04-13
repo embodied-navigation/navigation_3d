@@ -6,7 +6,7 @@ repositories:
   nav_protocol:
     type: git
     url: git@github.com:embodied-navigation/nav_protocol.git
-    version: main
+    version: feature/minimal-navigation-mvp
   map_manager:
     type: git
     url: git@github.com:embodied-navigation/map_manager.git

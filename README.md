@@ -7,16 +7,19 @@ humanoids.
 
 ## Repository Role
 
-This repository is the current single main repository for:
+This repository is the current integration repository for:
 
 - workspace integration and dependency assembly
 - launch and runtime assembly
 - Docker-based development environment bootstrap
 - project governance, documentation, scripts, and CI
-- future module-splitting and repository migration planning
+- repository-level version locking across child repositories
 
-Although dedicated child repositories already exist in the organization, current formal
-development remains in this repository.
+Formal implementation now happens in a hybrid model:
+
+- child repositories host active module development
+- `navigation_3d` remains the single integration, launch, documentation, environment, and
+  validation entrypoint
 
 ## Branch Model
 
@@ -50,15 +53,16 @@ historical documentation and commit history.
 
 ## Child Repositories
 
-The `embodied-navigation` organization already reserves matching child repositories for the
-future module split, but they are currently placeholder repositories only.
+The `embodied-navigation` organization now uses dedicated child repositories for active
+module development.
 
 Current rule:
 
-- `navigation_3d` is the only formal development repository
-- child repositories reserve names, ownership boundaries, and future migration targets
-- code movement into child repositories will happen only after interfaces and ownership are
-  stable enough to justify independent versioning
+- `navigation_3d` is the only formal integration repository
+- module development happens in child repositories
+- workspace assembly, Docker environment, launch orchestration, CI, and smoke validation are
+  still owned by this repository
+- the current minimal navigation MVP is assembled through `repos/private.repos`
 
 See [`docs/repository-plan.md`](./docs/repository-plan.md) for the detailed policy.
 
@@ -80,8 +84,17 @@ Update existing sources:
 vcs pull src
 ```
 
-`base.repos` is retained only as a historical compatibility manifest for the earlier
-bootstrap stage and is no longer the recommended main entrypoint.
+`repos/private.repos` currently pins the active MVP branches for:
+
+- `nav_protocol`
+- `slam`
+- `map_manager`
+- `planner`
+- `controller`
+- `nav_launch`
+
+`base.repos` is retained only as a historical compatibility manifest and is no longer the
+recommended main entrypoint.
 
 ## Development Environment
 
