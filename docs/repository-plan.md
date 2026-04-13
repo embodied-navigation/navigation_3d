@@ -88,6 +88,17 @@ The active rule is:
 - a child repository change is not complete until the main repository updates
   `repos/private.repos` and the Docker-based smoke test passes
 
+## CI Strategy
+
+The repository uses a two-level CI model:
+
+- child repositories keep fast repository-local CI for formatting, unit tests, and module
+  build checks
+- `navigation_3d` keeps the workspace-assembly and end-to-end smoke test
+
+Shared helpers live in the root `scripts/` directory. The CI flow is documented in
+[`docs/ci-flow.md`](./ci-flow.md).
+
 ## Future Split Triggers
 
 Child repositories should begin hosting real implementation only when one or more of the

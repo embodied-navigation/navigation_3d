@@ -134,6 +134,15 @@ DDS profile inside the container.
 
 For more detail, see [`docs/development-environment.md`](./docs/development-environment.md).
 
+## CI Flow
+
+The repository follows a two-level CI model:
+
+- child repositories run fast repository-local CI
+- `navigation_3d` runs workspace assembly and minimal navigation smoke tests
+
+The detailed process is documented in [`docs/ci-flow.md`](./docs/ci-flow.md).
+
 ## Local Commands
 
 Primary helper entrypoints:

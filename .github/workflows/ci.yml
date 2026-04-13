@@ -19,14 +19,33 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y clang-format clang-tidy cmake g++ ninja-build
 
-      - name: Format check
-        run: ./scripts/format_check.sh
+      - name: Run local build and test
+        run: ./scripts/ci_local.sh
 
-      - name: Configure
-        run: ./scripts/configure.sh
+  integration-smoke:
+    runs-on: ubuntu-24.04
 
-      - name: Build
-        run: ./scripts/build.sh
+    steps:
+      - uses: actions/checkout@v4
 
-      - name: Test
-        run: ./scripts/test.sh
+      - name: Detect integration credentials
+        id: creds
+        env:
+          NAVIGATION_3D_CI_SSH_KEY: ${{ secrets.NAVIGATION_3D_CI_SSH_KEY }}
+        run: |
+          if [ -z "${NAVIGATION_3D_CI_SSH_KEY:-}" ]; then
+            echo "enabled=false" >> "${GITHUB_OUTPUT}"
+            echo "integration smoke is skipped because NAVIGATION_3D_CI_SSH_KEY is not configured."
+            exit 0
+          fi
+          echo "enabled=true" >> "${GITHUB_OUTPUT}"
+
+      - name: Start ssh-agent
+        if: steps.creds.outputs.enabled == 'true'
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.NAVIGATION_3D_CI_SSH_KEY }}
+
+      - name: Run integration smoke
+        if: steps.creds.outputs.enabled == 'true'
+        run: ./scripts/ci_integration.sh "${GITHUB_WORKSPACE}"

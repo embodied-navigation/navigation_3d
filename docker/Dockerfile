@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y \
     clang-tidy \
     cmake \
     git \
+    openssh-client \
     libeigen3-dev \
     libgflags-dev \
     libgoogle-glog-dev \
@@ -38,6 +39,7 @@ RUN apt-get update && apt-get install -y \
     python3-colcon-common-extensions \
     python3-pip \
     python3-rosdep \
+    python3-yaml \
     python3-vcstool \
     python3 \
     wget \
