@@ -143,6 +143,13 @@ The repository follows a two-level CI model:
 
 The detailed process is documented in [`docs/ci-flow.md`](./docs/ci-flow.md).
 
+## Release Notes
+
+Release notes are generated from tag ranges and Conventional Commits.
+
+- draft generation and release-note rules: [`docs/release-notes.md`](./docs/release-notes.md)
+- generator script: [`scripts/release_notes.py`](./scripts/release_notes.py)
+
 ## Local Commands
 
 Primary helper entrypoints:

@@ -1,0 +1,32 @@
+name: release-notes
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release-notes:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate release notes
+        run: |
+          notes_path="${RUNNER_TEMP}/release-notes.md"
+          ./scripts/release_notes.py --to "${GITHUB_REF_NAME}" --title "${GITHUB_REF_NAME}" --output "${notes_path}"
+          cat "${notes_path}"
+        shell: bash
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          body_path: ${{ runner.temp }}/release-notes.md

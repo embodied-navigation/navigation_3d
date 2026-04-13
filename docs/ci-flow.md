@@ -38,6 +38,9 @@ Child CI should not be responsible for:
 - minimal navigation smoke test
 - optional RViz launch validation when secrets and environment allow it
 
+Release tags also trigger the release-notes workflow, which generates the frozen GitHub
+Release body from the tag range and the same Conventional Commit history.
+
 ## Shared Scripts
 
 The current repository provides reusable scripts for both repository-local and integration

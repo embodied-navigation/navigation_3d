@@ -99,6 +99,15 @@ The repository uses a two-level CI model:
 Shared helpers live in the root `scripts/` directory. The CI flow is documented in
 [`docs/ci-flow.md`](./ci-flow.md).
 
+## Release Notes Strategy
+
+The repository uses Git tags as the source of truth for versioned release notes.
+
+- draft generation and release-note rules live in [`docs/release-notes.md`](./release-notes.md)
+- release notes are generated from Conventional Commits and merged PR titles
+- a tag push publishes the frozen release body automatically
+- repository-local release archives can be stored under `docs/releases/` if needed
+
 ## Future Split Triggers
 
 Child repositories should begin hosting real implementation only when one or more of the
