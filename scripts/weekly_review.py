@@ -83,6 +83,8 @@ class RepoSnapshot:
     url: str
     manifest_version: str
     is_main: bool
+    accessible: bool
+    access_error: str | None
     default_branch: str
     default_branch_sha: str | None
     default_branch_status: str
@@ -362,11 +364,15 @@ def current_git_token() -> str:
     for env_name in (
         "WEEKLY_REVIEW_GITHUB_TOKEN",
         "GH_TOKEN",
-        "GITHUB_TOKEN",
     ):
         value = os.environ.get(env_name, "").strip()
         if value:
             return value
+    if os.environ.get("GITHUB_ACTIONS", "").lower() == "true":
+        return ""
+    value = os.environ.get("GITHUB_TOKEN", "").strip()
+    if value:
+        return value
     completed = subprocess.run(
         ["gh", "auth", "status", "-h", "github.com", "-t"],
         check=False,
@@ -532,26 +538,41 @@ def repository_health(
     since: dt.datetime,
     repo_root: Path,
 ) -> RepoSnapshot:
-    repo_info = client.repo(repo.full_name)
-    default_branch = str(repo_info.get("default_branch") or repo.version or "develop")
-    branch_info = client.branch(repo.full_name, default_branch)
+    default_branch = repo.version if repo.version else "develop"
     default_branch_sha = None
     default_branch_status = "unknown"
-    if branch_info:
-        default_branch_sha = str(branch_info.get("commit", {}).get("sha") or "")
-        if default_branch_sha:
-            default_branch_status = str(
-                client.combined_status(repo.full_name, default_branch_sha).get("state")
-                or "unknown"
-            )
+    open_prs: list[PRSnapshot] = []
+    merged_prs: list[MergedPRSnapshot] = []
+    latest_release = None
+    latest_tag = None
+    accessible = True
+    access_error: str | None = None
 
-    open_items = client.open_pulls(repo.full_name)
-    open_prs = [summarize_pr(client, repo, item) for item in open_items]
-    merged_items = client.merged_pulls_since(repo.full_name, since)
-    merged_prs = [summarize_merged_pr(item, repo) for item in merged_items]
+    try:
+        repo_info = client.repo(repo.full_name)
+        default_branch = str(repo_info.get("default_branch") or default_branch)
+        branch_info = client.branch(repo.full_name, default_branch)
+        if branch_info:
+            default_branch_sha = str(branch_info.get("commit", {}).get("sha") or "")
+            if default_branch_sha:
+                default_branch_status = str(
+                    client.combined_status(repo.full_name, default_branch_sha).get("state")
+                    or "unknown"
+                )
 
-    latest_release = client.latest_release(repo.full_name)
-    latest_tag = client.latest_tag(repo.full_name)
+        open_items = client.open_pulls(repo.full_name)
+        open_prs = [summarize_pr(client, repo, item) for item in open_items]
+        merged_items = client.merged_pulls_since(repo.full_name, since)
+        merged_prs = [summarize_merged_pr(item, repo) for item in merged_items]
+
+        latest_release = client.latest_release(repo.full_name)
+        latest_tag = client.latest_tag(repo.full_name)
+    except RuntimeError as exc:
+        error_message = str(exc)
+        if repo.is_main:
+            raise
+        accessible = False
+        access_error = error_message
 
     lock_changes: list[str] = []
     local_head = None
@@ -563,7 +584,9 @@ def repository_health(
     return RepoSnapshot(
         name=repo.name,
         full_name=repo.full_name,
-        url=str(repo_info.get("html_url") or repo.url),
+        url=repo.url,
+        accessible=accessible,
+        access_error=access_error,
         manifest_version=repo.version,
         is_main=repo.is_main,
         default_branch=default_branch,
@@ -584,6 +607,8 @@ def build_questions(repos: list[RepoSnapshot], priority_queue: list[PRSnapshot])
     questions: list[str] = []
     if any(repo.default_branch_status != "success" for repo in repos):
         questions.append("是否需要优先处理默认分支状态异常的仓库？")
+    if any(not repo.accessible for repo in repos):
+        questions.append("是否需要为周报工作流补充可访问所有子仓的 GitHub token？")
     if any(pr.risk == "P0" for pr in priority_queue):
         questions.append("是否先处理所有 P0 PR 再推进下一轮合并？")
     if any(repo.lock_changes for repo in repos if repo.name == "navigation_3d"):
@@ -759,6 +784,10 @@ def render_repo_section(
         lines.append(f"- 本地分支：`{repo.local_branch or 'N/A'}`")
         lines.append(f"- 本地 HEAD：`{repo.local_head or 'N/A'}`")
         lines.append(f"- 本地工作区脏状态：`{'yes' if repo.local_dirty else 'no'}`")
+    if not repo.accessible:
+        lines.append("- 访问状态：`inaccessible`")
+        if repo.access_error:
+            lines.append(f"- 访问错误：`{repo.access_error}`")
     if include_lock and repo.lock_changes:
         lines.append("- 本周 version lock 变更：")
         for change in repo.lock_changes:
