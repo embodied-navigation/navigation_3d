@@ -90,6 +90,17 @@ The active rule is:
 - a child repository change is not complete until the main repository updates
   `repos/private.repos` and the Docker-based smoke test passes
 
+## Future Split Triggers
+
+Child repositories should begin hosting real implementation only when one or more of the
+following become true:
+
+- the corresponding module interfaces are stable
+- the module has a clear long-term owner
+- the module needs an independent release cadence
+- the main repository CI or collaboration cost becomes too high
+- the module has clear reuse value outside the main repository
+
 ## Future Migration Direction
 
 The next repository structure target is expected to center on these ROS 2 packages under
@@ -105,5 +116,5 @@ The next repository structure target is expected to center on these ROS 2 packag
 - `src/task_manager`
 - `src/nav_launch`
 
-The next modules expected to become active repositories are `perception` and `task_manager`,
-but they are intentionally not part of the current minimal navigation MVP.
+This document only defines the governance and migration direction. It does not itself move
+code into the child repositories.
