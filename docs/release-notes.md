@@ -36,6 +36,19 @@ The output is grouped by commit type:
 - `style`
 - `breaking`
 
+## Repository Changelog
+
+`CHANGELOG.md` is the repository-level rolling changelog. It is generated from the same
+tag and Conventional Commit history, and can be refreshed locally or by the changelog
+sync workflow:
+
+```bash
+./scripts/update_changelog.py --output CHANGELOG.md
+```
+
+When `develop` changes, the changelog sync workflow can open a PR that refreshes the file
+using the same generator logic.
+
 ## Tag-Based Release Notes
 
 When a release tag is pushed, the repository automatically generates a GitHub Release body

@@ -108,6 +108,10 @@ The repository uses Git tags as the source of truth for versioned release notes.
 - a tag push publishes the frozen release body automatically
 - repository-local release archives can be stored under `docs/releases/` if needed
 
+The rolling repository changelog lives in `CHANGELOG.md` and is generated from the same
+history. It can be refreshed locally or by the changelog sync workflow when `develop`
+changes.
+
 ## Future Split Triggers
 
 Child repositories should begin hosting real implementation only when one or more of the
