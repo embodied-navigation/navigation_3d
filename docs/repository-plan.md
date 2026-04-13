@@ -7,8 +7,8 @@ This document defines the current repository governance and workspace strategy f
 
 ## Current Repository Model
 
-`navigation_3d` is the only formal development repository in the `embodied-navigation`
-organization at the current stage.
+`navigation_3d` is the integration repository in the `embodied-navigation` organization at
+the current stage.
 
 The matching child repositories already exist:
 
@@ -24,12 +24,10 @@ The matching child repositories already exist:
 
 Current status:
 
-- `status: reserved`
-- `code_owner: none yet`
-- `migration_phase: future`
-
-These child repositories currently reserve names, future ownership boundaries, and future
-repository targets only. They do not yet host formal implementation work.
+- `nav_protocol`, `slam`, `map_manager`, `planner`, `controller`, and `nav_launch` are active
+  development repositories for the current MVP
+- `nav_common`, `perception`, and `task_manager` remain reserved for later stages
+- `navigation_3d` continues to own integration, launch, environment, CI, and version locking
 
 ## Branch Strategy
 
@@ -54,7 +52,9 @@ Update existing child repositories with:
 vcs pull src
 ```
 
-`repos/private.repos` is the current main source of truth for child repository assembly.
+`repos/private.repos` is the current main source of truth for child repository assembly and
+pins the active MVP branches for the child repositories participating in the current
+minimal navigation system.
 
 `base.repos` remains only as a historical compatibility manifest from the earlier bootstrap
 phase and is no longer the recommended main workflow entrypoint.
@@ -80,6 +80,15 @@ Current policy:
 - do not add new code under the old layout
 - do not describe the old layout as the long-term repository structure
 - keep migration planning separate from implementation work
+
+## Current Multi-Repository Rule
+
+The active rule is:
+
+- child repositories own module implementation
+- `navigation_3d` owns system assembly and validation
+- a child repository change is not complete until the main repository updates
+  `repos/private.repos` and the Docker-based smoke test passes
 
 ## Future Split Triggers
 
