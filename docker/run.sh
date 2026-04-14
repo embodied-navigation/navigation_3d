@@ -10,6 +10,8 @@ container_home="/root"
 container_config_dir="${container_home}/config"
 container_env_file="/workspace/env.sh"
 shell_command="if [[ -f ${container_env_file} ]]; then source ${container_env_file}; fi; exec /bin/bash"
+docker_network_mode="${NAVIGATION_3D_DOCKER_NETWORK_MODE:-host-only}"
+ros_localhost_only="${NAVIGATION_3D_ROS_LOCALHOST_ONLY:-1}"
 
 docker_args=(
   --rm
@@ -17,12 +19,29 @@ docker_args=(
   --ipc=host
   --shm-size=1g
   -it
-  --net=host
   -e "ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}"
+  -e "ROS_LOCALHOST_ONLY=${ros_localhost_only}"
   -e "LD_LIBRARY_PATH=/usr/local/lib:${host_ld_library_path}"
   -w /workspace
   -v "${workspace_dir}:/workspace"
 )
+
+case "${docker_network_mode}" in
+  host)
+    docker_args+=(--net=host)
+    ;;
+  host-only|bridge)
+    docker_args+=(--network=bridge)
+    ;;
+  none)
+    docker_args+=(--network=none)
+    ;;
+  *)
+    echo "Unsupported NAVIGATION_3D_DOCKER_NETWORK_MODE: ${docker_network_mode}" >&2
+    echo "Supported values: host, host-only, bridge, none" >&2
+    exit 1
+    ;;
+esac
 
 if [[ -d "${resource_dir}" ]]; then
   docker_args+=(-v "${resource_dir}:/resource")
