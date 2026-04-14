@@ -59,6 +59,9 @@ Inside the container:
 ## Notes
 
 - Docker is the standard environment for setup, build, and test
+- `docker/run.sh` defaults to host-only ROS 2 networking (`ROS_LOCALHOST_ONLY=1` plus
+  Docker `bridge` networking); use `NAVIGATION_3D_DOCKER_NETWORK_MODE=host` only when you
+  intentionally need LAN discovery
 - host-side builds are not the preferred default
 - `base.repos` is retained only for historical compatibility and should not be used as the
   primary source import entrypoint for new workflows

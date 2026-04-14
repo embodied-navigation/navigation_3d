@@ -125,8 +125,10 @@ Inside the container, a typical sequence is:
 ./scripts/test.sh
 ```
 
-`docker/run.sh` mounts the repository as `/workspace`, preserves `ROS_DOMAIN_ID`, forwards
-X11 and NVIDIA settings when available, and sources [`env.sh`](./env.sh) on shell entry.
+`docker/run.sh` mounts the repository as `/workspace`, defaults to a host-only ROS 2
+networking mode (`ROS_LOCALHOST_ONLY=1` with Docker `bridge` networking), preserves
+`ROS_DOMAIN_ID`, forwards X11 and NVIDIA settings when available, and sources
+[`env.sh`](./env.sh) on shell entry.
 
 For the DDS shared-memory baseline, the repository provides
 [`config/fastdds_shm.xml`](./config/fastdds_shm.xml), which can be used as the default Fast
@@ -165,9 +167,9 @@ Release notes are generated from tag ranges and Conventional Commits.
 Primary helper entrypoints:
 
 ```bash
-./scripts/configure.sh
-./scripts/build.sh
+./scripts/build_workspace.sh .
 ./scripts/test.sh
+./scripts/test_minimal_navigation.sh .
 ./scripts/format_check.sh
 ./scripts/setup_workspace.sh .
 ```

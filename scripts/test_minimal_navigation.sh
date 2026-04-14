@@ -2,6 +2,7 @@
 set -euo pipefail
 
 workspace_root="${1:-$(pwd)}"
+install_dir="${NAVIGATION_3D_INSTALL_DIR:-${workspace_root}/install}"
 log_file="$(mktemp)"
 launch_pid=""
 
@@ -17,7 +18,7 @@ trap cleanup EXIT
 
 set +u
 source /opt/ros/humble/setup.bash
-source "${workspace_root}/install/setup.bash"
+source "${install_dir}/setup.bash"
 set -u
 
 cd "${workspace_root}"
