@@ -49,6 +49,11 @@ RUN apt-get update && apt-get install -y \
     ros-humble-rviz-default-plugins \
     ros-humble-tf2-ros \
     ros-humble-tf2-eigen \
+    ros-humble-nav2-costmap-2d \
+    ros-humble-nav2-common \
+    ros-humble-nav2-msgs \
+    ros-humble-nav2-util \
+    ros-humble-nav2-voxel-grid \
     && rm -rf /var/lib/apt/lists/*
 
 RUN rosdep init || true
