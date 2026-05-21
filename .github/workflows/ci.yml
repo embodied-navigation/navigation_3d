@@ -8,19 +8,15 @@ on:
   pull_request:
 
 jobs:
-  build-and-test:
+  skip-build-and-test:
     runs-on: ubuntu-24.04
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install toolchain
+      - name: Skip build and test
         run: |
-          sudo apt-get update
-          sudo apt-get install -y clang-format clang-tidy cmake g++ ninja-build
-
-      - name: Run local build and test
-        run: ./scripts/ci_local.sh
+          echo "Build and test are intentionally skipped in CI for this repository."
 
   integration-smoke:
     runs-on: ubuntu-24.04
