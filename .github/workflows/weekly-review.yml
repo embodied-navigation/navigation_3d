@@ -21,11 +21,8 @@ on:
       send_email:
         description: "Send email after generation"
         required: false
-        default: "true"
-        type: choice
-        options:
-          - "true"
-          - "false"
+        default: true
+        type: boolean
 
 permissions:
   contents: read
