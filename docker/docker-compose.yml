@@ -1,0 +1,24 @@
+services:
+  navigation_service:
+    image: navigation_3d:current
+    container_name: navigation_3d_container
+    restart: always
+    # 添加这两行，模拟 -it 效果，防止容器因为没有交互而退出
+    stdin_open: true
+    tty: true
+    
+    privileged: true
+    network_mode: host
+    ipc: host
+    volumes:
+      - /tmp/.x11-unix:/tmp/.x11-unix
+      - /dev:/dev
+      - ..:${CONTAINER_HOME:-/root}/navigation_3d/
+      - ${HOME}/resource:${CONTAINER_HOME:-/root}/resource
+    environment:
+      - DISPLAY=${DISPLAY}  # 确保这个变量有值
+      - HOME=${CONTAINER_HOME:-/root}
+      - GDK_SCALE
+      - GDK_DPI_SCALE
+    working_dir: ${CONTAINER_HOME:-/root}/navigation_3d
+    entrypoint: /bin/bash -c "rm -rf /dev/shm/* && source $${HOME}/navigation_3d/docker/runtime_env.sh && ros2 launch nav_launch robot_launch.py && tail -f /dev/null"

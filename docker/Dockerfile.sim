@@ -1,0 +1,27 @@
+FROM unitree_ros2_devcontainer-devcontainer-humble:latest
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV WEBOTS_HOME=/usr/local/webots
+ENV QTWEBENGINE_DISABLE_SANDBOX=1
+ENV PATH="${WEBOTS_HOME}:${PATH}"
+ENV NVIDIA_DRIVER_CAPABILITIES=graphics,compute,utility
+ENV USER=root
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+USER root
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ros-humble-vision-msgs \
+    ros-humble-hardware-interface \
+    ros-humble-controller-manager \
+    ros-humble-diff-drive-controller \
+    ros-humble-joint-state-broadcaster \
+    ros-humble-robot-state-publisher \
+    ros-humble-tf2-ros \
+ && rm -rf /var/lib/apt/lists/*
+ 
+ARG IMAGE_VERSION
+LABEL com.simulator_3d.image_version="${IMAGE_VERSION}"
+LABEL com.simulator_3d.image_type="simulation"
+ENV SIMULATOR_3D_IMAGE_VERSION="${IMAGE_VERSION}"
