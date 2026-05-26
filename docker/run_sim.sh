@@ -1,13 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT_DIR="$(dirname "${SCRIPT_DIR}")"
-IMAGE_VERSION="2026.04.02"
-IMAGE_REF="simulator_3d:${IMAGE_VERSION}"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+IMAGE_VERSION_SIM="$(<"${ROOT_DIR}/docker/IMAGE_VERSION_SIM")"
+IMAGE_REF="simulator_3d:${IMAGE_VERSION_SIM}"
+
 WORKSPACE_DIR="${ROOT_DIR}"
+ROS_DOMAIN_ID="${ROS_DOMAIN_ID:-0}"
+CONTAINER_HOME="${CONTAINER_HOME:-/root}"
+CONTAINER_NAV_ENV="${CONTAINER_HOME}/navigation_3d"
+
 WEBOTS_ASSETS_DIR="${WEBOTS_ASSETS_DIR:-${HOME}/software/assets-R2023b}"
-WEBOTS_ROS2_DIR="${WEBOTS_ROS2_DIR:-${ROOT_DIR}/src/simulator/webots_ros2}"
+WEBOTS_ROS2_DIR="${WEBOTS_ROS2_DIR:-${ROOT_DIR}/modules/simulator/webots_ros2}"
 WEBOTS_HOME_DIR="${WEBOTS_HOME_DIR:-${HOME}/software/webots-R2023b-x86-64/webots}"
 SIMULATION_WS_DIR="${SIMULATION_WS_DIR:-${HOME}/software/simulation_ws}"
 
@@ -25,16 +29,17 @@ DOCKER_ARGS=(
     -it --rm
     --privileged
     -e "DISPLAY=${DISPLAY:-}"
-    -e ROS_DOMAIN_ID=126 \
+    -e "ROS_DOMAIN_ID=${ROS_DOMAIN_ID}"
     -v "/tmp/.X11-unix:/tmp/.X11-unix:rw"
     -e "QT_X11_NO_MITSHM=1"
     -e "QTWEBENGINE_DISABLE_SANDBOX=1"
     -e "WEBOTS_HOME=/usr/local/webots"
+    -e "HOME=${CONTAINER_HOME}"
     --gpus all
     -e NVIDIA_DRIVER_CAPABILITIES=all
     -e NVIDIA_VISIBLE_DEVICES=all
-    -v "${WORKSPACE_DIR}:/navigation_3d/"
-    -v "${HOME}/resource:/resource"
+    -v "${WORKSPACE_DIR}:${CONTAINER_NAV_ENV}/"
+    -v "${HOME}/resource:${CONTAINER_HOME}/resource"
     -v "${SIMULATION_WS_DIR}:/simulation_ws:rw"
     -w /simulation_ws
     --network=host
@@ -72,5 +77,15 @@ else
     echo "webots_ros2 source directory not found: ${WEBOTS_ROS2_DIR}"
 fi
 
+CONTAINER_CMD=$(cat <<'EOF'
+rm -rf /dev/shm/*
+if [ -f /simulation_ws/install/setup.bash ]; then
+    source /simulation_ws/install/setup.bash
+fi
+exec /bin/bash
+EOF
+)
+
 docker run "${DOCKER_ARGS[@]}" \
-    "${IMAGE_REF}" /bin/bash -lc 'rm -rf /dev/shm/* && if [ -f /simulation_ws/install/setup.bash ]; then source /simulation_ws/install/setup.bash; fi && exec /bin/bash'
+    "${IMAGE_REF}" \
+    /bin/bash -lc "${CONTAINER_CMD}"
