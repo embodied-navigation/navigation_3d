@@ -11,9 +11,10 @@ CONTAINER_HOME="${CONTAINER_HOME:-/root}"
 CONTAINER_NAV_ENV="${CONTAINER_HOME}/navigation_3d"
 
 WEBOTS_ASSETS_DIR="${WEBOTS_ASSETS_DIR:-${HOME}/software/assets-R2023b}"
-WEBOTS_ROS2_DIR="${WEBOTS_ROS2_DIR:-${ROOT_DIR}/modules/simulator/webots_ros2}"
+WEBOTS_ROS2_DIR="${WEBOTS_ROS2_DIR:-${ROOT_DIR}/src/simulator/webots_ros2}"
 WEBOTS_HOME_DIR="${WEBOTS_HOME_DIR:-${HOME}/software/webots-R2023b-x86-64/webots}"
 SIMULATION_WS_DIR="${SIMULATION_WS_DIR:-${HOME}/software/simulation_ws}"
+CONTAINER_SIMULATION_WS="${CONTAINER_HOME}/simulation_ws"
 
 if ! docker image inspect "${IMAGE_REF}" >/dev/null 2>&1; then
     echo "Required image not found: ${IMAGE_REF}"
@@ -40,8 +41,8 @@ DOCKER_ARGS=(
     -e NVIDIA_VISIBLE_DEVICES=all
     -v "${WORKSPACE_DIR}:${CONTAINER_NAV_ENV}/"
     -v "${HOME}/resource:${CONTAINER_HOME}/resource"
-    -v "${SIMULATION_WS_DIR}:/simulation_ws:rw"
-    -w /simulation_ws
+    -v "${SIMULATION_WS_DIR}:${CONTAINER_SIMULATION_WS}:rw"
+    -w "${CONTAINER_SIMULATION_WS}"
     --network=host
     --device /dev:/dev
     --ipc=host
@@ -71,16 +72,16 @@ fi
 if [ -d "${WEBOTS_ROS2_DIR}" ]; then
     echo "Using webots_ros2 source: ${WEBOTS_ROS2_DIR}"
     DOCKER_ARGS+=(
-        -v "${WEBOTS_ROS2_DIR}:/simulation_ws/src/webots_ros2:rw"
+        -v "${WEBOTS_ROS2_DIR}:${CONTAINER_SIMULATION_WS}/src/webots_ros2:rw"
     )
 else
     echo "webots_ros2 source directory not found: ${WEBOTS_ROS2_DIR}"
 fi
 
-CONTAINER_CMD=$(cat <<'EOF'
+CONTAINER_CMD=$(cat <<EOF
 rm -rf /dev/shm/*
-if [ -f /simulation_ws/install/setup.bash ]; then
-    source /simulation_ws/install/setup.bash
+if [ -f ${CONTAINER_SIMULATION_WS}/install/setup.bash ]; then
+    source ${CONTAINER_SIMULATION_WS}/install/setup.bash
 fi
 exec /bin/bash
 EOF
